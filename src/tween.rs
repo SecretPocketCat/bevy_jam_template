@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use bevy::prelude::*;
+use bevy::{ecs::system::EntityCommands, prelude::*};
 use bevy_tweening::*;
 use std::{marker::PhantomData, time::Duration};
 
@@ -86,7 +86,7 @@ pub fn delay_tween<T: 'static>(tween: Tween<T>, delay_ms: u64) -> Sequence<T> {
     }
 }
 
-relative_tween_fns!(
+relative_tween_impl!(
     translation,
     Animator,
     Transform,
@@ -95,7 +95,7 @@ relative_tween_fns!(
     Vec3
 );
 
-relative_tween_fns!(
+relative_tween_impl!(
     scale,
     Animator,
     Transform,
@@ -104,7 +104,7 @@ relative_tween_fns!(
     Vec3
 );
 
-relative_tween_fns!(
+relative_tween_impl!(
     rotation,
     Animator,
     Transform,
@@ -113,7 +113,7 @@ relative_tween_fns!(
     Quat
 );
 
-relative_tween_fns!(
+relative_tween_impl!(
     text_color,
     Animator,
     Text,
@@ -122,7 +122,7 @@ relative_tween_fns!(
     Color
 );
 
-relative_tween_fns!(
+relative_tween_impl!(
     ui_bg_color,
     Animator,
     BackgroundColor,
@@ -131,7 +131,7 @@ relative_tween_fns!(
     Color
 );
 
-relative_tween_fns!(
+relative_tween_impl!(
     ui_image_color,
     Animator,
     UiImage,
@@ -140,7 +140,7 @@ relative_tween_fns!(
     Color
 );
 
-relative_tween_fns!(
+relative_tween_impl!(
     color_material_color,
     AssetAnimator,
     ColorMaterial,
@@ -222,7 +222,7 @@ impl Lens<Text> for TextRelativeColorLens {
 }
 
 color_lens!(Sprite, SpriteRelativeColorLens, color);
-relative_tween_fns!(
+relative_tween_impl!(
     sprite_color,
     Animator,
     Sprite,
@@ -321,77 +321,63 @@ macro_rules! relative_lens {
 
 pub(super) use relative_lens;
 
-macro_rules! relative_tween_fns {
+macro_rules! relative_tween_impl {
     ($name:ident, $animator: ty, $component:ty, $lens:ty, $value_start:ty, $value_end:ty) => {
         paste::paste! {
-            pub fn [<get_absolute_ $name _tween>](
-                start: $value_start,
+            pub fn [<$name _absolute_tween>](
                 end: $value_end,
                 duration_ms: u64,
-                ease: Option<EaseFunction>,
+                ease: EaseFunction,
             ) -> Tween<$component> {
-                [<get_ $name _tween>](
-                    Some(start),
-                    end,
-                    duration_ms,
-                    ease.unwrap_or(EaseFunction::QuadraticInOut),
-                )
-            }
-
-            pub fn [<get_relative_ $name _tween>](
-                end: $value_end,
-                duration_ms: u64,
-                ease: Option<EaseFunction>,
-            ) -> Tween<$component> {
-                [<get_ $name _tween>](
+                [<$name _tween_impl>](
                     None,
                     end,
                     duration_ms,
-                    ease.unwrap_or(EaseFunction::QuadraticInOut),
+                    ease,
                 )
             }
 
-            pub fn [<get_absolute_ $name _anim>](
-                start: $value_start,
+            pub fn [<$name _tween>](
                 end: $value_end,
                 duration_ms: u64,
-                ease: Option<EaseFunction>,
-            ) -> $animator<$component> {
-                $animator::new([<get_absolute_ $name _tween>](
-                    start,
+                ease: EaseFunction,
+            ) -> Tween<$component> {
+                [<$name _tween_impl>](
+                    None,
                     end,
                     duration_ms,
-                    ease,
-                ))
+                    ease
+                )
             }
 
-            pub fn [<get_relative_ $name _anim>](
-                end: $value_end,
-                duration_ms: u64,
-                ease: Option<EaseFunction>,
-            ) -> $animator<$component> {
-                $animator::new([<get_relative_ $name _tween>](
-                    end,
-                    duration_ms,
-                    ease,
-                ))
-            }
-
-            pub fn [<get_ $name _anim>](
-                start: Option<$value_start>,
+            pub fn [<$name _anim>](
                 end: $value_end,
                 duration_ms: u64,
                 ease: EaseFunction,
             ) -> $animator<$component> {
-                $animator::new([<get_ $name _tween>](
-                    start,
+                $animator::new([<$name _tween_impl>](
+                    None,
                     end,
                     duration_ms,
                     ease,
                 ))
             }
 
-            pub fn [<get_ $name _tween>](
+            pub fn [<$name _absolute_anim>](
+                start: $value_start,
+                end: $value_end,
+                duration_ms: u64,
+                ease: EaseFunction,
+            ) -> $animator<$component> {
+                $animator::new([<$name _tween_impl>](
+                    Some(start),
+                    end,
+                    duration_ms,
+                    ease,
+                ))
+            }
+
+            fn [<$name _tween_impl>](
                 start: Option<$value_start>,
                 end: $value_end,
                 duration_ms: u64,
@@ -406,8 +392,95 @@ macro_rules! relative_tween_fns {
                     },
                 ).with_completed_event(0)
             }
+
+            #[allow(non_camel_case_types)]
+            pub trait [<Tween_ $name TweenCommands>] {
+                fn [<tween_ $name>](
+                    &mut self,
+                    entity: Entity,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                );
+
+                fn [<tween_ $name _absolute>](
+                    &mut self,
+                    entity: Entity,
+                    start: $value_start,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                );
+            }
+
+            impl<'w, 's> [<Tween_ $name TweenCommands>] for Commands<'w, 's> {
+                fn [<tween_ $name>](
+                    &mut self,
+                    entity: Entity,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                ) {
+                    if let Some(mut e_cmd) = self.get_entity(entity) {
+                        e_cmd.try_insert([<$name _anim>](end, duration_ms, ease));
+                    }
+                }
+
+                fn [<tween_ $name _absolute>](
+                    &mut self,
+                    entity: Entity,
+                    start: $value_start,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                ) {
+                    if let Some(mut e_cmd) = self.get_entity(entity) {
+                        e_cmd.try_insert([<$name _absolute_anim>](start, end, duration_ms, ease));
+                    }
+                }
+            }
+
+            #[allow(non_camel_case_types)]
+            pub trait [<Tween_ $name TweenEntityCommands>] {
+                fn [<tween_ $name>](
+                    &mut self,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                );
+
+                fn [<tween_ $name _absolute>](
+                    &mut self,
+                    start: $value_start,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                );
+            }
+
+            impl<'w> [<Tween_ $name TweenEntityCommands>] for EntityCommands<'w> {
+                fn [<tween_ $name>](
+                    &mut self,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                ) {
+                    self.try_insert([<$name _anim>](end, duration_ms, ease));
+                }
+
+                fn [<tween_ $name _absolute>](
+                    &mut self,
+                    start: $value_start,
+                    end: $value_end,
+                    duration_ms: u64,
+                    ease: EaseFunction,
+                ) {
+                    self.try_insert([<$name _absolute_anim>](start, end, duration_ms, ease));
+                }
+            }
+
         }
     };
 }
 
-pub(super) use relative_tween_fns;
+pub(super) use relative_tween_impl;

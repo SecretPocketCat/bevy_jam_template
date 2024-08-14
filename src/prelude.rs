@@ -1,6 +1,7 @@
 // prelude module to simplify common imports
 #![allow(unused_imports)]
 
+pub(crate) use crate::tween::*;
 pub(crate) use crate::{
     assets::{MusicAssets, SfxAssets, SpriteAssets},
     audio::{
@@ -14,12 +15,7 @@ pub(crate) use crate::{
     AppSet,
 };
 pub(crate) use bevy::{prelude::*, utils::HashMap};
+pub(crate) use bevy_tweening::{
+    asset_animator_system, component_animator_system, Animator, AssetAnimator, Ease, EaseFunction,
+};
 pub(crate) use rand::prelude::*;
-
-pub(crate) mod tween {
-    pub(crate) use crate::tween::*;
-    pub(crate) use bevy_tweening::{
-        asset_animator_system, component_animator_system, Animator, AssetAnimator, Ease,
-        EaseFunction,
-    };
-}
