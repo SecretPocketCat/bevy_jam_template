@@ -6,12 +6,13 @@ mod dev_tools;
 mod prelude;
 mod screens;
 mod theme;
+mod tween;
 
 use bevy::{
     asset::AssetMetaCheck,
     audio::{AudioPlugin, Volume},
-    prelude::*,
 };
+use prelude::*;
 
 pub struct AppPlugin;
 
@@ -62,6 +63,7 @@ impl Plugin for AppPlugin {
             theme::plugin,
             assets::plugin,
             audio::plugin,
+            tween::plugin,
         ));
 
         // Enable dev tools for dev builds.
