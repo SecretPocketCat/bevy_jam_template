@@ -1,8 +1,8 @@
 # Template
 
 - [x] game prelude
-- [ ] bring in tweening
-- [ ] bring in math
+- [x] bring in tweening
+- [x] bring in math
 - [ ] bring in ext
 - [ ] use bevy_asset_loader
 - [ ] use enum for sfx

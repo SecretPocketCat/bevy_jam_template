@@ -3,6 +3,7 @@ mod audio;
 mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod math;
 mod prelude;
 mod screens;
 mod theme;
