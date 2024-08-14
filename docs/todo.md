@@ -3,7 +3,7 @@
 - [x] game prelude
 - [x] bring in tweening
 - [x] bring in math
-- [ ] bring in ext
+- [x] bring in ext
 - [ ] use bevy_asset_loader
 - [ ] use enum for sfx
 - [ ] use leafwing_input_manager
