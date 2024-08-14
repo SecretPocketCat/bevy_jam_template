@@ -4,8 +4,8 @@
 - [x] bring in tweening
 - [x] bring in math
 - [x] bring in ext
-- [ ] use bevy_asset_loader
-- [ ] use enum for sfx
+- [x] use bevy_asset_loader
+- [x] use enum for sfx
 - [ ] use leafwing_input_manager
 - [ ] screen transition
 - [ ] tweened buttons

@@ -1,9 +1,9 @@
 mod assets;
 mod audio;
-mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod ext;
+mod game;
 mod math;
 mod prelude;
 mod screens;
@@ -60,7 +60,7 @@ impl Plugin for AppPlugin {
 
         // Add other plugins.
         app.add_plugins((
-            demo::plugin,
+            game::plugin,
             screens::plugin,
             theme::plugin,
             assets::plugin,

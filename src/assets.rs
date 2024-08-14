@@ -1,114 +1,126 @@
-//! This module contains the asset handles used throughout the game.
-//! During `Screen::Loading`, the game will load the assets specified here.
-//! Your systems can then request the resources defined here to access the
-//! loaded assets.
-
-use bevy::{
-    prelude::*,
-    render::texture::{ImageLoaderSettings, ImageSampler},
-    utils::HashMap,
-};
+use crate::prelude::*;
+use bevy_asset_loader::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.register_type::<ImageHandles>();
-    app.init_resource::<ImageHandles>();
-
-    app.register_type::<BgmHandles>();
-    app.init_resource::<BgmHandles>();
-
-    app.register_type::<SfxHandles>();
-    app.init_resource::<SfxHandles>();
+    app.add_loading_state(
+        LoadingState::new(Screen::Loading)
+            // .continue_to_state(Screen::Loaded)
+            .continue_to_state(Screen::MainMenu)
+            .load_collection::<SpriteAssets>()
+            .load_collection::<SfxAssets>()
+            .load_collection::<MusicAssets>(),
+    );
+    // app.add_systems(Startup, setup_particles);
 }
 
-#[derive(Resource, Debug, Deref, DerefMut, Reflect)]
-#[reflect(Resource)]
-pub struct ImageHandles(HashMap<String, Handle<Image>>);
-
-impl ImageHandles {
-    pub const PATH_DUCKY: &'static str = "images/ducky.png";
+#[allow(dead_code)]
+pub fn assets_exist(
+    sprites: Option<Res<SpriteAssets>>,
+    sfx: Option<Res<SfxAssets>>,
+    music: Option<Res<MusicAssets>>,
+    // particles: Option<Res<ParticleAssets>>,
+) -> bool {
+    sprites.is_some() && sfx.is_some() && music.is_some() /*&& particles.is_some()*/
 }
 
-impl FromWorld for ImageHandles {
-    fn from_world(world: &mut World) -> Self {
-        let asset_server = world.resource::<AssetServer>();
-
-        let pixel_art_settings = |settings: &mut ImageLoaderSettings| {
-            // Use `nearest` image sampling to preserve the pixel art style.
-            settings.sampler = ImageSampler::nearest();
-        };
-
-        let pixel_art_paths = [Self::PATH_DUCKY];
-        let map = pixel_art_paths
-            .into_iter()
-            .map(|path| {
-                (
-                    path.to_string(),
-                    asset_server.load_with_settings(path, pixel_art_settings),
-                )
-            })
-            .collect();
-
-        Self(map)
-    }
+#[derive(AssetCollection, Resource)]
+pub struct SpriteAssets {
+    // #[asset(path = "images/transition_circle.png")]
+    // pub transition_circle: Handle<Image>,
 }
 
-/// Stores the handles for background music, aka soundtracks.
-#[derive(Resource, Debug, Deref, DerefMut, Reflect)]
-#[reflect(Resource)]
-pub struct BgmHandles(HashMap<String, Handle<AudioSource>>);
-
-impl BgmHandles {
-    pub const PATH_CREDITS: &'static str = "audio/bgm/Monkeys Spinning Monkeys.ogg";
-    pub const PATH_GAMEPLAY: &'static str = "audio/bgm/Fluffing A Duck.ogg";
+#[derive(AssetCollection, Resource)]
+pub struct SfxAssets {
+    #[asset(path = "audio/sfx/button_hover.ogg")]
+    pub button_hover: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/button_press.ogg")]
+    pub button_click: Handle<AudioSource>,
+    // collection example
+    // #[asset(paths("audio/sfx/click_1.ogg", "audio/sfx/click_2.ogg"), collection(typed))]
+    // files_typed: Vec<Handle<AudioSource>>,
 }
 
-impl FromWorld for BgmHandles {
-    fn from_world(world: &mut World) -> Self {
-        let asset_server = world.resource::<AssetServer>();
-
-        let paths = [Self::PATH_CREDITS, Self::PATH_GAMEPLAY];
-        let map = paths
-            .into_iter()
-            .map(|path| (path.to_string(), asset_server.load(path)))
-            .collect();
-
-        Self(map)
-    }
+#[derive(AssetCollection, Resource)]
+pub struct MusicAssets {
+    #[asset(path = "audio/music/main_menu.ogg")]
+    pub main_menu: Handle<AudioSource>,
+    #[asset(path = "audio/music/game.ogg")]
+    pub game: Handle<AudioSource>,
 }
 
-/// The values stored here are a `Vec<Handle<AudioSource>>` because
-/// a single sound effect can have multiple variations.
-#[derive(Resource, Debug, Deref, DerefMut, Reflect)]
-#[reflect(Resource)]
-pub struct SfxHandles(HashMap<String, Vec<Handle<AudioSource>>>);
+// todo: use asset_loader for particles too
+// #[derive(AssetCollection, Resource)]
+// pub struct ParticleAssets {
+//     #[asset(path = "particles/circle.png")]
+//     pub circle_mat: Handle<SpriteParticle2dMaterial>,
+//     #[asset(path = "particles/gun.particle.ron")]
+//     pub gun: Handle<Particle2dEffect>,
+//     #[asset(path = "particles/enemy.particle.ron")]
+//     pub enemy: Handle<Particle2dEffect>,
+//     #[asset(path = "particles/reflection.particle.ron")]
+//     pub reflection: Handle<Particle2dEffect>,
+//     #[asset(path = "particles/core.particle.ron")]
+//     pub core: Handle<Particle2dEffect>,
+// }
 
-impl SfxHandles {
-    pub const PATH_BUTTON_HOVER: &'static str = "audio/sfx/button_hover.ogg";
-    pub const PATH_BUTTON_PRESS: &'static str = "audio/sfx/button_press.ogg";
-    pub const PATH_STEP: &'static str = "audio/sfx/step";
-}
+// #[derive(Resource, Reflect)]
+// #[reflect(Resource)]
+// pub struct ParticleAssets {
+//     pub circle_mat: Handle<SpriteParticle2dMaterial>,
+//     pub gun: Handle<Particle2dEffect>,
+//     pub enemy: Handle<Particle2dEffect>,
+//     pub reflection: Handle<Particle2dEffect>,
+//     pub core: Handle<Particle2dEffect>,
+//     pub core_clear: Handle<Particle2dEffect>,
+//     pub bg: Handle<Particle2dEffect>,
+//     pub ball: Handle<Particle2dEffect>,
+// }
 
-impl FromWorld for SfxHandles {
-    fn from_world(world: &mut World) -> Self {
-        let asset_server = world.get_resource::<AssetServer>().unwrap();
+// impl ParticleAssets {
+//     pub fn square_particle_spawner(
+//         &self,
+//         effect: Handle<Particle2dEffect>,
+//         transform: Transform,
+//     ) -> ParticleSpawnerBundle<ColorParticle2dMaterial> {
+//         ParticleSpawnerBundle {
+//             effect,
+//             material: DEFAULT_MATERIAL,
+//             transform,
+//             ..default()
+//         }
+//     }
 
-        let paths = [Self::PATH_BUTTON_HOVER, Self::PATH_BUTTON_PRESS];
-        let mut map: HashMap<_, _> = paths
-            .into_iter()
-            .map(|path| (path.to_string(), vec![asset_server.load(path)]))
-            .collect();
+//     pub fn particle_spawner(
+//         &self,
+//         effect: Handle<Particle2dEffect>,
+//         transform: Transform,
+//     ) -> ParticleSpawnerBundle<SpriteParticle2dMaterial> {
+//         ParticleSpawnerBundle {
+//             effect,
+//             material: self.circle_mat.clone(),
+//             transform,
+//             ..default()
+//         }
+//     }
+// }
 
-        // Using string parsing to strip numbered suffixes + `AssetServer::load_folder`
-        // is a good way to load many sound effects at once, but is not supported on
-        // Wasm or Android.
-        const STEP_VARIATIONS: u32 = 4;
-        let mut step_sfx = Vec::new();
-        for i in 1..=STEP_VARIATIONS {
-            let file = format!("{key}{i}.ogg", key = Self::PATH_STEP);
-            step_sfx.push(asset_server.load(file));
-        }
-        map.insert(Self::PATH_STEP.to_string(), step_sfx);
-
-        Self(map)
-    }
-}
+// fn setup_particles(
+//     ass: Res<AssetServer>,
+//     mut materials: ResMut<Assets<SpriteParticle2dMaterial>>,
+//     mut cmd: Commands,
+// ) {
+//     cmd.insert_resource(ParticleAssets {
+//         circle_mat: materials.add(
+//             // hframes and vframes define how the sprite sheet is divided for animations,
+//             // if you just want to bind a single texture, leave both at 1.
+//             SpriteParticle2dMaterial::new(ass.load("particles/circle.png"), 1, 1),
+//         ),
+//         gun: ass.load("particles/gun.particle.ron"),
+//         enemy: ass.load("particles/enemy.particle.ron"),
+//         reflection: ass.load("particles/reflection.particle.ron"),
+//         core: ass.load("particles/core.particle.ron"),
+//         core_clear: ass.load("particles/core_clear.particle.ron"),
+//         bg: ass.load("particles/bg.particle.ron"),
+//         ball: ass.load("particles/ball.particle.ron"),
+//     });
+// }
