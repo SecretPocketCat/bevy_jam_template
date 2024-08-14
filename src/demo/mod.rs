@@ -3,7 +3,7 @@
 //! Feel free to change the logic found here if you feel like tinkering around
 //! to get a feeling for the template.
 
-use bevy::prelude::*;
+use crate::prelude::*;
 
 mod animation;
 pub mod level;

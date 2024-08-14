@@ -1,0 +1,20 @@
+# Template
+
+- [x] game prelude
+- [ ] bring in tweening
+- [ ] bring in math
+- [ ] bring in ext
+- [ ] use bevy_asset_loader
+- [ ] use enum for sfx
+- [ ] use leafwing_input_manager
+- [ ] screen transition
+- [ ] tweened buttons
+- [ ] restart game/screen
+- [ ] settings menu
+- [ ] volume settings
+- [ ] pause menu
+- [ ] tutorial screen
+- [ ] score screen
+- [ ] leaderboard
+- [ ] basic LDTK integration
+
