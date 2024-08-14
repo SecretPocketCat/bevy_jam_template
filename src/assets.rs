@@ -23,6 +23,7 @@ pub fn assets_exist(
     sprites.is_some() && sfx.is_some() && music.is_some() /*&& particles.is_some()*/
 }
 
+// https://github.com/NiklasEi/bevy_asset_loader?tab=readme-ov-file#supported-asset-fields
 #[derive(AssetCollection, Resource)]
 pub struct SpriteAssets {
     // #[asset(path = "images/transition_circle.png")]
