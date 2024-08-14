@@ -11,6 +11,9 @@ use super::{
     palette::*,
 };
 
+pub(crate) const BUTTON_WIDTH: f32 = 200.0;
+pub(crate) const BUTTON_HEIGHT: f32 = 65.0;
+
 /// An extension trait for spawning UI widgets.
 pub trait Widgets {
     /// Spawn a simple button with text.
@@ -29,8 +32,8 @@ impl<T: Spawn> Widgets for T {
             Name::new("Button"),
             ButtonBundle {
                 style: Style {
-                    width: Px(200.0),
-                    height: Px(65.0),
+                    width: Px(BUTTON_WIDTH),
+                    height: Px(BUTTON_HEIGHT),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     ..default()

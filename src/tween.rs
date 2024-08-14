@@ -114,6 +114,15 @@ relative_tween_impl!(
 );
 
 relative_tween_impl!(
+    style_size,
+    Animator,
+    Style,
+    StyleRelativeSizeLens,
+    Vec2,
+    Vec2
+);
+
+relative_tween_impl!(
     text_color,
     Animator,
     Text,
@@ -161,7 +170,6 @@ pub struct TransformRelativeByPositionLens {
 }
 
 impl TransformRelativeByPositionLens {
-    #[allow(dead_code)]
     pub fn new(move_by: Vec3) -> Self {
         Self {
             move_by,
@@ -218,6 +226,30 @@ impl Lens<Text> for TextRelativeColorLens {
     ) {
         self.start
             .get_or_insert_with(|| target.sections.iter().map(|s| s.style.color).collect());
+    }
+}
+
+relative_lens_struct!(StyleRelativeSizeLens, Vec2);
+impl Lens<Style> for StyleRelativeSizeLens {
+    fn lerp(&mut self, target: &mut dyn Targetable<Style>, ratio: f32) {
+        if let Some(start) = self.start {
+            let size = start + (self.end - start) * ratio;
+            target.width = Val::Px(size.x);
+            target.height = Val::Px(size.y);
+        }
+    }
+
+    fn update_on_tween_start(
+        &mut self,
+        target: &mut dyn Targetable<Style>,
+        _direction: TweeningDirection,
+        _times_completed: i32,
+    ) {
+        if self.start.is_none() {
+            if let (Val::Px(w), Val::Px(h)) = (target.width, target.height) {
+                self.start = Some(Vec2::new(w, h));
+            }
+        }
     }
 }
 

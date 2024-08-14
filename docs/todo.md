@@ -6,9 +6,9 @@
 - [x] bring in ext
 - [x] use bevy_asset_loader
 - [x] use enum for sfx
+- [x] tweened buttons
 - [ ] use leafwing_input_manager
 - [ ] screen transition
-- [ ] tweened buttons
 - [ ] restart game/screen
 - [ ] settings menu
 - [ ] volume settings

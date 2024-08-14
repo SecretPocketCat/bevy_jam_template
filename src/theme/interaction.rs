@@ -1,6 +1,8 @@
 use crate::prelude::*;
 use bevy::ecs::system::SystemId;
 
+use super::widgets::{BUTTON_HEIGHT, BUTTON_WIDTH};
+
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<InteractionPalette>();
     app.add_systems(
@@ -8,6 +10,7 @@ pub(super) fn plugin(app: &mut App) {
         (
             trigger_on_press,
             apply_interaction_palette,
+            apply_button_interaction_size,
             trigger_interaction_sfx,
         ),
     );
@@ -41,18 +44,35 @@ fn trigger_on_press(
 }
 
 fn apply_interaction_palette(
-    mut palette_query: Query<
-        (&Interaction, &InteractionPalette, &mut BackgroundColor),
-        Changed<Interaction>,
-    >,
+    mut palette_query: Query<(Entity, &Interaction, &InteractionPalette), Changed<Interaction>>,
+    mut cmd: Commands,
 ) {
-    for (interaction, palette, mut background) in &mut palette_query {
-        *background = match interaction {
+    for (e, interaction, palette) in &mut palette_query {
+        let color = match interaction {
             Interaction::None => palette.none,
             Interaction::Hovered => palette.hovered,
             Interaction::Pressed => palette.pressed,
-        }
-        .into();
+        };
+        cmd.tween_ui_bg_color(e, color, 200, EaseFunction::QuadraticInOut);
+    }
+}
+
+fn apply_button_interaction_size(
+    mut palette_query: Query<(Entity, &Interaction), (Changed<Interaction>, With<Button>)>,
+    mut cmd: Commands,
+) {
+    for (e, interaction) in &mut palette_query {
+        let scale = match interaction {
+            Interaction::None => 1.0,
+            Interaction::Hovered => 1.1,
+            Interaction::Pressed => 1.25,
+        };
+        cmd.tween_style_size(
+            e,
+            Vec2::new(BUTTON_WIDTH, BUTTON_HEIGHT) * scale,
+            350,
+            EaseFunction::BackOut,
+        );
     }
 }
 
