@@ -11,10 +11,14 @@ pub(super) fn plugin(app: &mut App) {
                 start_transition_out.run_if(state_changed::<ScreenTransition>),
                 start_transition_in,
             ),
-        );
+        )
+        .insert_resource(TransitionSpeedFactor(if cfg!(feature = "dev") {
+            0.5
+        } else {
+            1.0
+        }));
 }
 
-#[allow(dead_code)]
 #[derive(States, Debug, Hash, PartialEq, Eq, Clone, Default)]
 enum ScreenTransition {
     #[default]
@@ -47,10 +51,19 @@ impl<'w, 's> TransitionScreenCommandExt for Commands<'w, 's> {
     }
 }
 
+#[derive(Resource, Deref, DerefMut)]
+pub struct TransitionSpeedFactor(pub f32);
+
+impl TransitionSpeedFactor {
+    pub fn duration(&self, base_duration: u64) -> u64 {
+        (base_duration as f32 * self.0) as u64
+    }
+}
+
 #[derive(Component)]
 struct TransitionImage;
 
-fn setup_transition_overlay(mut cmd: Commands) {
+fn setup_transition_overlay(mut cmd: Commands, speed_factor: Res<TransitionSpeedFactor>) {
     cmd.spawn((
         Name::new("transition"),
         ImageBundle {
@@ -68,10 +81,10 @@ fn setup_transition_overlay(mut cmd: Commands) {
     .insert(Animator::new(delay_tween(
         ui_bg_color_tween(
             BACKGROUND_COLOR.with_alpha(0.0),
-            800,
+            speed_factor.duration(800),
             EaseFunction::QuadraticInOut,
         ),
-        300,
+        speed_factor.duration(300),
     )));
 }
 
@@ -79,6 +92,7 @@ fn start_transition_out(
     next_transition_state: ResMut<State<ScreenTransition>>,
     mut cmd: Commands,
     transition_img_q: Query<Entity, With<TransitionImage>>,
+    speed_factor: Res<TransitionSpeedFactor>,
 ) {
     if !matches!(
         next_transition_state.get(),
@@ -88,7 +102,12 @@ fn start_transition_out(
     }
 
     let e = or_return!(transition_img_q.get_single());
-    cmd.tween_ui_bg_color(e, BACKGROUND_COLOR, 600, EaseFunction::QuadraticInOut);
+    cmd.tween_ui_bg_color(
+        e,
+        BACKGROUND_COLOR,
+        speed_factor.duration(600),
+        EaseFunction::QuadraticInOut,
+    );
 }
 
 fn start_transition_in(
@@ -98,6 +117,7 @@ fn start_transition_in(
     mut cmd: Commands,
     mut tween_evr: EventReader<TweenCompleted>,
     transition_img_q: Query<Entity, With<TransitionImage>>,
+    speed_factor: Res<TransitionSpeedFactor>,
 ) {
     if let ScreenTransition::TransitioningOut(screen) = screen_trans.get() {
         let e = or_return_quiet!(tween_evr
@@ -110,7 +130,7 @@ fn start_transition_in(
         cmd.tween_ui_bg_color(
             e,
             BACKGROUND_COLOR.with_alpha(0.0),
-            600,
+            speed_factor.duration(600),
             EaseFunction::QuadraticInOut,
         );
     }

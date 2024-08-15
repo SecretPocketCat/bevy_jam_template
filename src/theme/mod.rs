@@ -1,12 +1,10 @@
 //! Reusable UI widgets & theming.
 
-// Unused utilities and re-exports may trigger these lints undesirably.
-#![allow(dead_code, unused_imports)]
-
 pub mod interaction;
 pub mod palette;
 mod widgets;
 
+#[allow(dead_code, unused_imports)]
 pub mod prelude {
     pub use super::{
         interaction::{InteractionPalette, OnPress},

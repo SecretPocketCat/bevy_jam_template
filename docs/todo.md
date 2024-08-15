@@ -7,7 +7,7 @@
 - [x] use bevy_asset_loader
 - [x] use enum for sfx
 - [x] tweened buttons
-- [ ] screen transition
+- [x] screen transition
 - [ ] use leafwing_input_manager
 - [ ] restart game/screen
 - [ ] settings menu

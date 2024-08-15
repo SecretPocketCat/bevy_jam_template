@@ -203,7 +203,6 @@ pub struct TextRelativeColorLens {
 }
 
 impl TextRelativeColorLens {
-    #[allow(dead_code)]
     pub fn relative(end: Color) -> Self {
         Self { start: None, end }
     }
@@ -282,12 +281,10 @@ macro_rules! relative_lens_struct {
         }
 
         impl $lens {
-            #[allow(dead_code)]
             pub fn relative(end: $value) -> Self {
                 Self { start: None, end }
             }
 
-            #[allow(dead_code)]
             pub fn new(start: $value, end: $value) -> Self {
                 Self {
                     start: Some(start),

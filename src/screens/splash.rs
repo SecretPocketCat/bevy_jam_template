@@ -9,10 +9,7 @@ use super::Screen;
 use crate::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    // Spawn splash screen.
     app.add_systems(OnEnter(Screen::Splash), spawn_splash);
-
-    // Add splash timer.
     app.register_type::<SplashTimer>()
         .init_resource::<SplashTimer>();
     app.add_systems(

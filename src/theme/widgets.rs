@@ -1,15 +1,8 @@
 //! Helper traits for creating common widgets.
 
-use bevy::{
-    ecs::system::{EntityCommands, SystemId},
-    prelude::*,
-    ui::Val::*,
-};
-
-use super::{
-    interaction::{InteractionPalette, OnPress},
-    palette::*,
-};
+use super::{interaction::InteractionPalette, palette::*};
+use crate::prelude::*;
+use bevy::{ecs::system::EntityCommands, ui::Val::*};
 
 pub(crate) const BUTTON_WIDTH: f32 = 200.0;
 pub(crate) const BUTTON_HEIGHT: f32 = 65.0;
