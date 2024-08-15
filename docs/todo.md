@@ -8,8 +8,9 @@
 - [x] use enum for sfx
 - [x] tweened buttons
 - [x] screen transition
-- [ ] use leafwing_input_manager
-- [ ] restart game/screen
+- [x] use leafwing_input_manager
+- [x] restart game binding
+- [ ] bring in cooldown
 - [ ] settings menu
 - [ ] volume settings
 - [ ] pause menu

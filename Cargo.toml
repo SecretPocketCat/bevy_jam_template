@@ -23,6 +23,7 @@ tracing = { version = "0.1", features = [
 ] }
 paste = "1.0.15"
 tiny_bail = "0.1.2"
+leafwing-input-manager = "0.15"
 
 [features]
 default = [

@@ -9,6 +9,7 @@ pub(crate) use crate::{
         sfx::{Sfx, SfxCommands},
     },
     ext::*,
+    input::{PlayerAction, PlayerInput, UiAction, UiInput},
     math::*,
     screens::{transition::TransitionScreenCommandExt, Screen},
     theme::prelude::*,
