@@ -34,6 +34,7 @@ impl Command for PlayMusic {
     }
 }
 
+// todo: don't restart the same track if it's already playing
 fn play_music(
     In(config): In<PlayMusic>,
     mut commands: Commands,
