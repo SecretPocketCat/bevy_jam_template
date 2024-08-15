@@ -2,6 +2,8 @@
 
 use crate::prelude::*;
 
+use super::trigger_transition_to_main_menu;
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Credits), show_credits_screen);
 }
@@ -21,10 +23,6 @@ fn show_credits_screen(mut commands: Commands) {
             children.label("Button SFX - CC0 by Jaszunio15");
             children.label("Music - CC BY 3.0 by Kevin MacLeod");
 
-            children.button("Back").observe(enter_title);
+            children.button("Back").observe(trigger_transition_to_main_menu);
         });
-}
-
-fn enter_title(_trigger: Trigger<OnPress>, mut cmd: Commands) {
-    cmd.transition_to_screen(Screen::MainMenu);
 }

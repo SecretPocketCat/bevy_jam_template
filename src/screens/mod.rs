@@ -7,7 +7,7 @@ mod main_menu;
 mod splash;
 pub(crate) mod transition;
 
-use bevy::prelude::*;
+use crate::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.init_state::<Screen>();
@@ -40,3 +40,19 @@ pub enum Screen {
     Score,
     Quit,
 }
+
+macro_rules! transition_system {
+    ($name: ident, $screen:tt) => {
+        paste::paste! {
+            pub(crate) fn [<trigger_transition_to_ $name>](_trigger: Trigger<OnPress>, mut cmd: Commands) {
+                cmd.transition_to_screen(Screen::$screen);
+            }
+        }
+    };
+}
+
+transition_system!(main_menu, MainMenu);
+transition_system!(game, Game);
+transition_system!(tutorial, Tutorial);
+transition_system!(settings, Settings);
+transition_system!(credits, Credits);
