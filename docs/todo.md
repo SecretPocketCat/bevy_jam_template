@@ -10,7 +10,7 @@
 - [x] screen transition
 - [x] use leafwing_input_manager
 - [x] restart game binding
-- [ ] bring in cooldown
+- [x] bring in cooldown
 - [ ] settings menu
 - [ ] volume settings
 - [ ] pause menu

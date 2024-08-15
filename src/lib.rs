@@ -10,6 +10,7 @@ mod math;
 mod prelude;
 mod screens;
 mod theme;
+mod time;
 mod tween;
 
 use bevy::{
@@ -67,6 +68,7 @@ impl Plugin for AppPlugin {
             tween::plugin,
             camera::plugin,
             input::plugin,
+            time::plugin,
         ));
 
         // Enable dev tools for dev builds.

@@ -13,6 +13,7 @@ pub(crate) use crate::{
     math::*,
     screens::{transition::TransitionScreenCommandExt, Screen},
     theme::prelude::*,
+    time::*,
     AppSet,
 };
 pub(crate) use bevy::{prelude::*, utils::HashMap};
