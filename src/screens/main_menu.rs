@@ -18,12 +18,12 @@ fn show_title_screen(mut cmd: Commands) {
     cmd.play_music(MusicTrack::MainMenu);
 }
 
-fn enter_playing(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
-    next_screen.set(Screen::Game);
+fn enter_playing(_trigger: Trigger<OnPress>, mut cmd: Commands) {
+    cmd.transition_to_screen(Screen::Game);
 }
 
-fn enter_credits(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
-    next_screen.set(Screen::Credits);
+fn enter_credits(_trigger: Trigger<OnPress>, mut cmd: Commands) {
+    cmd.transition_to_screen(Screen::Credits);
 }
 
 #[cfg(not(target_family = "wasm"))]

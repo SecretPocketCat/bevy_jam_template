@@ -5,6 +5,7 @@ mod game;
 mod loading;
 mod main_menu;
 mod splash;
+pub(crate) mod transition;
 
 use bevy::prelude::*;
 
@@ -18,6 +19,7 @@ pub(super) fn plugin(app: &mut App) {
         main_menu::plugin,
         credits::plugin,
         game::plugin,
+        transition::plugin,
     ));
 }
 

@@ -10,7 +10,7 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        return_to_title_screen
+        return_to_main_menu
             .run_if(in_state(Screen::Game).and_then(input_just_pressed(KeyCode::Escape))),
     );
 }
@@ -24,6 +24,6 @@ fn stop_music(mut commands: Commands) {
     commands.stop_music();
 }
 
-fn return_to_title_screen(mut next_screen: ResMut<NextState<Screen>>) {
-    next_screen.set(Screen::MainMenu);
+fn return_to_main_menu(mut cmd: Commands) {
+    cmd.transition_to_screen(Screen::MainMenu);
 }

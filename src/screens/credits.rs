@@ -25,6 +25,6 @@ fn show_credits_screen(mut commands: Commands) {
         });
 }
 
-fn enter_title(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
-    next_screen.set(Screen::MainMenu);
+fn enter_title(_trigger: Trigger<OnPress>, mut cmd: Commands) {
+    cmd.transition_to_screen(Screen::MainMenu);
 }
