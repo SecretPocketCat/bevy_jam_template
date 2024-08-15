@@ -4,8 +4,10 @@ mod credits;
 mod game;
 mod loading;
 mod main_menu;
+mod settings;
 mod splash;
 pub(crate) mod transition;
+mod tutorial;
 
 use crate::prelude::*;
 
@@ -19,6 +21,8 @@ pub(super) fn plugin(app: &mut App) {
         main_menu::plugin,
         credits::plugin,
         game::plugin,
+        settings::plugin,
+        tutorial::plugin,
         transition::plugin,
     ));
 }
